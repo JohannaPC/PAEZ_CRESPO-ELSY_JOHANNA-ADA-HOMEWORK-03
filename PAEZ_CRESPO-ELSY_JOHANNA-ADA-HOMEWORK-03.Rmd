@@ -1,6 +1,6 @@
 ---
-title: "PAEZ_CERSPO-ELSY_JOHANNA-ADA-HOMEWORK-03"
-author: "Johanna Paez Crespo"
+title: "PAEZ_CRESPO-ELSY_JOHANNA-ADA-HOMEWORK-03"
+author: "Elsy Johanna Paez Crespo"
 date: "20/3/2019"
 output: html_document
 ---
@@ -22,12 +22,12 @@ Write a simple R function you call Z.prop.test(), that can perform one- or two-s
 ####CODING for one-sample Z-test:
 
 ```{r}
-z.prop.test <- function(p1, p2 = NULL, n1, n2 = NULL, p0, alternative = "less", conf.level = 0.95){
+z.prop.test <- function(p1, p2 = NULL, n1, n2 = NULL, p0, alternative = "two.sided", conf.level = 0.95){
   # Coding for one-sample Z-test:
   if(is.null(p2)){
     p1 <- mean(v1)
     n1 <- length(v1)
-    p0 <- # expected proportion
+    p0 <- # must to be defined based on previous data (expected proportion)
     z <- (p1 - p0)/sqrt(p0 * (1 - p0) / n1)
     p <- pnorm(z, lower.tail = TRUE)
     lower.ci <- p1 - qnorm(conf.level) * sqrt(p1 * (1 - p1)/n1)
@@ -40,16 +40,51 @@ z.prop.test <- function(p1, p2 = NULL, n1, n2 = NULL, p0, alternative = "less", 
     }
   outcome <- list(z, p, lower.ci, upper.ci)
   names(outcome) <- c("z", "p", "lower.ci", "upper.ci")
-  }
+ }
 outcome
 }
 ```
 
-####CODING for two-sample Z-test:
+#####Using an example from class:
+
+```{r}
+v1 <- c(0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1)
+
+z.prop.test <- function(p1, p2 = NULL, n1, n2 = NULL, p0, alternative = "two.sided", conf.level = 0.95){
+  if(is.null(p2)){
+    p1 <- mean(v1)
+    n1 <- length(v1)
+    p0 <- 0.8 # expected proportion
+    z <- (p1 - p0)/sqrt(p0 * (1 - p0) / n1)
+    p <- pnorm(z, lower.tail = TRUE)
+    lower.ci <- p1 - qnorm(conf.level) * sqrt(p1 * (1 - p1)/n1)
+    upper.ci <- p1 + qnorm(conf.level) * sqrt(p1 * (1 - p1)/n1)
+     if((n1*p1)>5 && (n1*(1-p1)) > 5){
+       message("Validation: Be careful! The assumption of normal distribution is violated!")
+       }
+    else{
+      message("Validation: Data are normally distributed!")
+    }
+  outcome <- list(z, p, lower.ci, upper.ci)
+  names(outcome) <- c("z", "p", "lower.ci", "upper.ci")
+ }
+outcome
+}
+```
+
+```{r}
+z.prop.test()
+```
+
+####CODING for two-sample Z-test (using an example from class):
+
+```{r}
+v1 <- c(1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0)
+v2 <- c(1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1)
+```
 
 ```{r}
 z.prop.test <- function(p1, p2, n1, n2, p0=0, alternative = "two.sided", conf.level = 0.95){
-  # Coding for two-sample Z-test:
   {
     p1 <- mean(v1)
     p2 <- mean(v2)
@@ -75,6 +110,10 @@ outcome1
 }
 ```
 
+```{r}
+z.prop.test()
+```
+
 <span style="color:blue">***PROBLEM-02:***</span>
 
 The comparative primate dataset we have used from Kamilar and Cooper has in it a large number of variables related to life history and body size. For this exercise, the end aim is to fit a simple linear regression model to predict longevity (MaxLongevity_m) measured in months from species’ brain size (Brain_Size_Species_Mean) measured in grams. Do the following for both longevity~brain size and log(longevity)~log(brain size).
@@ -90,9 +129,6 @@ names(d)
 
 a) Fit the regression model and, using {ggplot2}, produce a scatterplot with the fitted line superimposed upon the data. Append the fitted model equation to your plot (HINT: use the function geom_text()).
 
-en formula lm(dependiente ~ independiente)
-Longevity ~ BrainSize
-
 ####LONGEVITY ~ BRAIN SIZE
  
 ```{r}
@@ -100,6 +136,7 @@ library(ggplot2)
 Longevity <- c(d$MaxLongevity_m)
 BrainSize <- c(d$Brain_Size_Species_Mean)
 m <- lm(data=d, Longevity ~ BrainSize)
+summary(m)
 m$coefficients
 ```
 
@@ -118,6 +155,7 @@ g
 LogLon <- log(Longevity)
 LogBraSize <- log(BrainSize)
 m1 <- lm(data=d, LogLon ~ LogBraSize)
+summary(m1)
 m1$coefficients
 ```
 
@@ -133,12 +171,13 @@ g
 b) Identify and interpret the point estimate of the slope (β1), as well as the outcome of the test associated with the hypotheses H0: β1=0; HA: β1≠0. Also, find a 90% CI for the slope (β1) parameter.
 
 ####LONGEVITY ~ BRAIN SIZE
-B1 <- 1.218
 
-B0 <- 248.952
+`B1 <- 1.218`
+
+`B0 <- 248.952`
 
 <span style="color:green">***Interpretation:***</span>
-For every 1 unit of change in Brain Size (x), we expected a 1.218 change in Longevity. Adittionally, B1 is not equal to zero (0), which means that we reject the null hypothesis, which support a effect of Brain Size on Longevity
+B1 is not equal to zero (0) meaning that we reject the null hypothesis, supporting an effect of Brain Size on Longevity. For every 1 unit of change in Brain Size (x), we expected a 1.218 change in Longevity (as Brain Size increases, Longevity increases).
 
 ```{r}
 alpha <- 0.1
@@ -148,12 +187,12 @@ ci_lm
 
 ####Log(LONGEVITY) ~ Log(BRAIN SIZE)
 
-B1 <- 0.2341
+`B1 <- 0.2341`
 
-B0 <- 4.8790
+`B0 <- 4.8790`
 
 <span style="color:green">***Interpretation:***</span>
-For every 1 unit of change in Log(Brain Size) (x), we expected a 0.2341 change in Log(Longevity). Adittionally, B1 is not equal to zero (0), which means that we reject the null hypothesis, which support a effect of Log(Brain Size) on Log(Longevity)
+B1 is not equal to zero (0), which means that we reject the null hypothesis, supporting an effect of Log(Brain Size) on Log(Longevity). For every 1 unit of change in Log(Brain Size) (x), we expected a 0.2341 change in Log(Longevity) (as Brain Size increases, Longevity increases).
 
 ```{r}
 alpha <- 0.1
@@ -190,24 +229,94 @@ head(dff)
 ```
 
 ```{r}
-g <- ggplot(data = dff, aes(x = x, y = y))
+g <- ggplot(data = dff, aes(x = BrainSize, y = Longevity))
 g <- g + geom_point(alpha = 0.5)
-g <- g + geom_line(aes(x = x, y = CIfit), colour = "black")
-g <- g + geom_line(aes(x = x, y = CIlwr), colour = "blue")
-g <- g + geom_line(aes(x = x, y = CIupr), colour = "blue")
-g <- g + geom_line(data = dff, aes(x = x, y = PIlwr), colour = "red")
-g <- g + geom_line(data = dff, aes(x = x, y = PIupr), colour = "red")
-g <- g + scale_color_manual(labels=c("Predicted", "hah"), values=c("blue", "red")) + guides(color=guide_legend("my data"))
+g <- g + geom_line(aes(x = x, y = CIfit, colour = "black"))
+g <- g + geom_line(aes(x = x, y = CIlwr, colour = "blue"))
+g <- g + geom_line(aes(x = x, y = CIupr, colour = "blue"))
+g <- g + geom_line(data = dff, aes(x = x, y = PIlwr, colour = "red"))
+g <- g + geom_line(data = dff, aes(x = x, y = PIupr, colour = "red"))
+g <- g + scale_color_identity(name=" ", breaks=c("black", "blue", "red"), labels=c("Reggresion line", "90% confidence intervals", "90% predicted intervals"), guide="legend")
+g
+```
+
+####Log(LONGEVITY) ~ Log(BRAIN SIZE)
+
+```{r}
+m1 <- lm(data=d, LogLon ~ LogBraSize)
+logData <- data.frame(LogLon, LogBraSize)
+LogLon_hat <- predict(m1, newdata = data.frame(LogBrainSize = logData$LogBraSize))
+df1 <- data.frame(cbind(logData$LogBraSize, logData$LogLon, LogLon_hat))
+names(df1) <- c("x", "y", "yhat")
+head(df1)
+```
+
+```{r}
+ci1 <- predict(m1, newdata = data.frame(LogBrainSize = logData$LogBraSize), interval = "confidence", level = 0.90)  # for a vector of values
+head(ci1)
+```
+
+```{r}
+pi1 <- predict(m1, newdata = data.frame(LogBrainSize = logData$LogBraSize), interval = "prediction", level = 0.90)  # for a vector of values
+head(pi1)
+```
+
+```{r}
+dfflog <- cbind(df1, ci1, pi1)
+names(dfflog) <- c("x", "y", "yhat", "CIfit", "CIlwr", "CIupr", "PIfit", "PIlwr", 
+    "PIupr")
+head(dfflog)
+```
+
+```{r}
+g <- ggplot(data = dfflog, aes(x = LogBraSize, y = LogLon))
+g <- g + geom_point(alpha = 0.5)
+g <- g + geom_line(aes(x = x, y = CIfit, colour = "black"))
+g <- g + geom_line(aes(x = x, y = CIlwr, colour = "blue"))
+g <- g + geom_line(aes(x = x, y = CIupr, colour = "blue"))
+g <- g + geom_line(data = dfflog, aes(x = x, y = PIlwr, colour = "red"))
+g <- g + geom_line(data = dfflog, aes(x = x, y = PIupr, colour = "red"))
+g <- g + scale_color_identity(name=" ", breaks=c("black", "blue", "red"), labels=c("Reggresion line", "90% confidence intervals", "90% predicted intervals"), guide="legend")
+g
+```
+
+d) Produce a point estimate and associated 90% prediction interval for the longevity of a species whose brain weight is 800 gm.
+
+####LONGEVITY ~ BRAIN SIZE
+```{r}
+plongevity <- predict(m, newdata = data.frame(BrainSize = 800), interval = "prediction", level = 0.90)
+plongevity
+```
+
+####Log(LONGEVITY) ~ Log(BRAIN SIZE)
+```{r}
+plongevity1 <- predict(m1, newdata = data.frame(LogBraSize = 2.9030), interval = "prediction", level = 0.90)
+plongevity1
+```
+
+d) Do you trust the model to predict observations accurately for this value of the explanatory variable? Why or why not?
+
+<span style="color:green">***Answer:***</span>
+Based on the model, the Longevity expected for a Brain Size of 800gr would be 1223.345. Is difficult to trust on this prediction because as Brain Size increases, the width of the confidence intervals increase as well, meaning that this prediction would be non-well supported. Also, because we don't have any data above Brain Size of 500gr is difficult to conclude that the association between the two variables (Longevity & Brain Size) will continue having a positive correlation.     
+
+e) Looking at your two models, which do you think is better? Why?
+
+####LONGEVITY ~ BRAIN SIZE
+```{r}
+g <- ggplot(data = df, aes(x = x, y = yhat))
+g <- g + geom_point()
+g <- g + geom_point(aes(x = x, y = y), colour = "red")
+g <- g + geom_segment(aes(x = x, y = yhat, xend = x, yend = y))
 g
 ```
 
 ####Log(LONGEVITY) ~ Log(BRAIN SIZE)
 ```{r}
+g <- ggplot(data = df1, aes(x = x, y = yhat))
+g <- g + geom_point()
+g <- g + geom_point(aes(x = x, y = y), colour = "red")
+g <- g + geom_segment(aes(x = x, y = yhat, xend = x, yend = y))
+g
 ```
 
-d) Produce a point estimate and associated 90% prediction interval for the longevity of a species whose brain weight is 800 gm. Do you trust the model to predict observations accurately for this value of the explanatory variable? Why or why not?
-
-```{r}
-```
-
-e) Looking at your two models, which do you think is better? Why?
+I think that between both models, the log-model is better, because 57.84% of the variance in Longevity is explained by Brain Size. In contrast, in the non-log-model only the 49.28% of the variance in Longevity is explained by Brain Size. Also, when looking at the residuals, them seems to be more randomly distributed in the log-model comparing to the non-log-model.
