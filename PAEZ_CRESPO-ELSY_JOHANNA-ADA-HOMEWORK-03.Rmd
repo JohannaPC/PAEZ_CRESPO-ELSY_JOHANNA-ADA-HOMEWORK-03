@@ -116,14 +116,6 @@ m <- lm(data=d, Longevity ~ BrainSize)
 summary(m)
 m$coefficients
 ```
-residuals <- resid(m)
-dfL_BS <- data.frame(d$MaxLongevity_m, d$Brain_Size_Species_Mean)
-dfL_BSnNA <- na.omit(dfL_BS)
-residuals <- resid(m)
-residualsdf <- data.frame(residuals)
-resi_plot <- plot(dfL_BSnNA$d.Brain_Size_Species_Mean, residualsdf$residuals, ylab="Residuals", xlab="Brain Size", main="Longevity", abline(0, 0))
-resi_plot
-```
 
 ```{r}
 g <- ggplot(data=d, aes(x=BrainSize, y=Longevity))
